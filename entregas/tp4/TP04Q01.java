@@ -71,7 +71,7 @@ public class TP04Q01 {
                     gameList.remover(Integer.parseInt(comando_game[1]));
                     break;
                 case "RF":
-                    gamesRemoved.inserirFim(gameList.get(gameList.tamanho() - 1));
+                    gamesRemoved.inserirFim(gameList.get(gameList.size() - 1));
                     gameList.removerFim();
                     break;
                 default:
@@ -79,11 +79,11 @@ public class TP04Q01 {
             }
         }
 
-        for (int i = 0; i < gamesRemoved.tamanho(); i++) {
+        for (int i = 0; i < gamesRemoved.size(); i++) {
             MyIO.println("(R) " + gamesRemoved.get(i).getName());
         }
         
-        for (int i = 0; i < gameList.tamanho(); i++) {
+        for (int i = 0; i < gameList.size(); i++) {
             MyIO.print("[" + i + "] ");
             gameList.get(i).imprimir();
         }
@@ -131,11 +131,11 @@ class Celula {
     }
 }
 
-class GameList {
+class GameLista {
     private Celula firstItem;
     private int size;
 
-    GameList() {
+    GameLista() {
         this.firstItem = new Celula();
         int size = 0;
     }
@@ -164,7 +164,7 @@ class GameList {
             return;
         }
         Celula item = this.firstItem;
-        for (int i = 0; i < pos; item = item.next; i++);
+        for (int i = 0; i < pos; item = item.next, i++);
         item.next = item.next.next;
         this.size--;
     }
@@ -177,19 +177,19 @@ class GameList {
         this.remover(this.size - 1);
     }
 
-    void size() {
+    int size() {
         return this.size;
     }
     
     Game get(int pos) {
         Celula item = new Celula();
-        for (int i = 0; i < pos; item = item.next; i++);
+        for (int i = 0; i < pos; item = item.next, i++);
         return item.next.game;
     }
 
     void set(int pos, Game game) {
         Celula item = new Celula();
-        for (int i = 0; i < pos; item = item.next; i++);
+        for (int i = 0; i < pos; item = item.next, i++);
         item.next.game = game;
     }
 

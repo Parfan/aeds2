@@ -71,7 +71,7 @@ public class TP04Q01 {
                     gameList.remover(Integer.parseInt(comando_game[1]));
                     break;
                 case "RF":
-                    gamesRemoved.inserirFim(gameList.get(gameList.size() - 1));
+                    gamesRemoved.inserirFim(gameList.get(gameList.tamanho() - 1));
                     gameList.removerFim();
                     break;
                 default:
@@ -79,11 +79,11 @@ public class TP04Q01 {
             }
         }
 
-        for (int i = 0; i < gamesRemoved.size(); i++) {
+        for (int i = 0; i < gamesRemoved.tamanho(); i++) {
             MyIO.println("(R) " + gamesRemoved.get(i).getName());
         }
         
-        for (int i = 0; i < gameList.size(); i++) {
+        for (int i = 0; i < gameList.tamanho(); i++) {
             MyIO.print("[" + i + "] ");
             gameList.get(i).imprimir();
         }
@@ -113,7 +113,7 @@ public class TP04Q01 {
 
 class Celula {
     Game game;
-    Celula next;
+    Celula prox;
 
     Celula() {
         this(null);
@@ -121,7 +121,7 @@ class Celula {
 
     Celula(Game game) {
         this.game = game;
-        this.next = null;
+        this.prox = null;
     }
 
     void swap(Game game1, Game game2) {
@@ -132,71 +132,90 @@ class Celula {
 }
 
 class GameLista {
-    private Celula firstItem;
-    private int size;
+    private Celula primeiro, ultimo;
+    private int tamanho;
 
-    GameLista() {
-        this.firstItem = new Celula();
-        int size = 0;
+    public GameLista() {
+        this.primeiro = new Celula();
+        this.ultimo = this.primeiro;
+        this.tamanho = 0;
     }
 
-    void inserir(Game game, int pos) {
-        Celula item = this.firstItem;
+    public void inserirInicio(Game game) {
         Celula tmp = new Celula(game);
-        for (int i = 0; i < pos; item = item.next, i++);
-        tmp.next = item.next;
-        item.next = tmp;
-        this.size++;
-    }
-
-    void inserirInicio(Game game) {
-        this.inserir(game, 0);
-    }
-
-    void inserirFim(Game game) {
-        this.inserir(game, this.size);
-    }
-
-    void remover(int pos) {
-        if (this.size == 1) {
-            this.firstItem = new Celula();
-            this.size = 0;
-            return;
+        tmp.prox = this.primeiro.prox;
+        this.primeiro.prox = tmp;
+        if (primeiro == this.ultimo) {
+            this.ultimo = tmp;
         }
-        Celula item = this.firstItem;
-        for (int i = 0; i < pos; item = item.next, i++);
-        item.next = item.next.next;
-        this.size--;
+        this.tamanho++;
     }
 
-    void removerInicio() {
-        this.remover(0);
+    public void inserir(Game game, int pos) {
+        if (pos == 0) {
+            inserirInicio(game);
+        } else if (pos == this.tamanho) {
+            inserirFim(game);
+        } else {
+            Celula i = this.primeiro;
+            for (int j = 0; j < pos; j++, i = i.prox);
+            Celula tmp = new Celula(game);
+            tmp.prox = i.prox;
+            i.prox = tmp;
+        }
+        this.tamanho++;
     }
 
-    void removerFim() {
-        this.remover(this.size - 1);
+    public void inserirFim(Game game) {
+        Celula tmp = new Celula(game);
+        this.ultimo.prox = tmp;
+        this.ultimo = tmp;
+        this.tamanho++;
     }
 
-    int size() {
-        return this.size;
-    }
-    
-    Game get(int pos) {
-        Celula item = new Celula();
-        for (int i = 0; i < pos; item = item.next, i++);
-        return item.next.game;
+    public Game removerInicio() {
+        Celula tmp = this.primeiro.prox;
+        Game game = tmp.game;
+        this.primeiro.prox = tmp.prox;
+        this.tamanho--;
+        return game;
     }
 
-    void set(int pos, Game game) {
-        Celula item = new Celula();
-        for (int i = 0; i < pos; item = item.next, i++);
-        item.next.game = game;
+    public Game remover(int pos) {
+        Game game;
+        if (pos == 0) {
+            game = removerInicio();
+        } else if (pos == this.tamanho - 1) {
+            game = removerFim();
+        } else {
+            Celula i = this.primeiro;
+            for (int j = 0; j < pos; j++, i = i.prox);
+            Celula tmp = i.prox;
+            game = tmp.game;
+            i.prox = tmp.prox;
+        }
+        this.tamanho--;
+        return game;
     }
 
-    void imprimir() {
-        MyIO.print("[");
-        
-        MyIO.println("]");
+    public Game removerFim() {
+        Celula i;
+        for (i = this.primeiro; i.prox != ultimo; i = i.prox);
+        Game game = this.ultimo.game;
+        this.ultimo = i;
+        this.tamanho--;
+        return game;
+    }
+
+    public Game get(int pos) {
+        Celula i = this.primeiro;
+        for (int j = 0; j < pos; j++, i = i.prox);
+        Celula tmp = i.prox;
+        return tmp.game;
+    }
+
+    public int tamanho() {
+        return this.tamanho;
     }
 }
 
